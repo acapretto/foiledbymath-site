@@ -51,7 +51,10 @@ body {
 
 .logo-img {
     height: 50px;
-    width: auto;
+    width: 50px;
+    max-height: 50px;
+    max-width: 50px;
+    object-fit: contain;
 }
 
 .logo-text {
@@ -435,7 +438,10 @@ footer {
 
 .footer-logo-img {
     height: 50px;
-    width: auto;
+    width: 50px;
+    max-height: 50px;
+    max-width: 50px;
+    object-fit: contain;
 }
 
 .footer-tagline {
@@ -475,6 +481,9 @@ footer a:hover {
     
     .logo-img {
         height: 40px;
+        width: 40px;
+        max-height: 40px;
+        max-width: 40px;
     }
     
     .logo-text {
@@ -516,5 +525,12 @@ footer a:hover {
     
     .footer-links {
         text-align: center;
+    }
+    
+    .footer-logo-img {
+        height: 40px;
+        width: 40px;
+        max-height: 40px;
+        max-width: 40px;
     }
 }
