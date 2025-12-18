@@ -90,7 +90,7 @@ nav a:hover {
     ), url('TpT-StoreBanner.png');
     background-size: cover;
     background-position: center;
-    color: #FF4F81;
+    color: var(--soft-cream);
     padding: 8rem 0 6rem;
     text-align: center;
 }
@@ -106,6 +106,7 @@ nav a:hover {
     margin-bottom: 1.5rem;
     line-height: 1.0;
     letter-spacing: -0.4pt;
+    color: var(--soft-cream);
 }
 
 .tagline {
@@ -123,7 +124,7 @@ nav a:hover {
 .hero-description {
     font-size: 1.25rem;
     margin-bottom: 2rem;
-    color: #FF4F81;
+    color: var(--soft-cream);
     opacity: 0.95;
 }
 
