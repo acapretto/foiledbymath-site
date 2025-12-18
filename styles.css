@@ -500,3 +500,33 @@ footer {
         padding: 5rem 0 4rem;
     }
 }
+
+/* Social Media Links */
+.social-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(250, 247, 240, 0.1);
+    color: var(--soft-cream);
+    transition: all 0.3s;
+}
+
+.social-link:hover {
+    background: linear-gradient(45deg, var(--bright-pink), var(--vibrant-orange), var(--neon-green));
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(236, 93, 130, 0.4);
+}
+
+.social-link svg {
+    width: 20px;
+    height: 20px;
+}
