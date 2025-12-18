@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "title": "Introduction to Algebra",
+    "description": "Master the fundamentals of algebraic thinking with step-by-step explanations and practice problems.",
+    "category": "Algebra",
+    "difficulty": "Beginner",
+    "link": "#"
+  },
+  {
+    "id": 2,
+    "title": "Geometry Basics",
+    "description": "Explore shapes, angles, and spatial relationships through interactive examples and real-world applications.",
+    "category": "Geometry",
+    "difficulty": "Beginner",
+    "link": "#"
+  },
+  {
+    "id": 3,
+    "title": "Calculus Fundamentals",
+    "description": "Dive into limits, derivatives, and integrals with clear explanations that demystify advanced concepts.",
+    "category": "Calculus",
+    "difficulty": "Advanced",
+    "link": "#"
+  },
+  {
+    "id": 4,
+    "title": "Statistics Made Simple",
+    "description": "Learn to analyze data, understand probability, and make informed decisions using statistical methods.",
+    "category": "Statistics",
+    "difficulty": "Intermediate",
+    "link": "#"
+  },
+  {
+    "id": 5,
+    "title": "Trigonometry Essentials",
+    "description": "Understand sine, cosine, tangent, and their applications in solving real-world problems.",
+    "category": "Trigonometry",
+    "difficulty": "Intermediate",
+    "link": "#"
+  },
+  {
+    "id": 6,
+    "title": "Problem Solving Strategies",
+    "description": "Develop critical thinking skills and learn proven techniques to tackle challenging math problems.",
+    "category": "General",
+    "difficulty": "All Levels",
+    "link": "#"
+  }
+]
