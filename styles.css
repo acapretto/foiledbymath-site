@@ -47,7 +47,7 @@ nav .container {
     display: flex;
     align-items: center;
     gap: 12px;
-    color: var(--soft-cream);
+    color: #FF4F81;
     font-size: 1.5rem;
     font-weight: 600;
     text-decoration: none;
@@ -69,7 +69,7 @@ nav ul {
 }
 
 nav a {
-    color: var(--soft-cream);
+    color: #FF4F81;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s;
@@ -90,7 +90,7 @@ nav a:hover {
     ), url('TpT-StoreBanner.png');
     background-size: cover;
     background-position: center;
-    color: var(--soft-cream);
+    color: #FF4F81;
     padding: 8rem 0 6rem;
     text-align: center;
 }
@@ -123,7 +123,7 @@ nav a:hover {
 .hero-description {
     font-size: 1.25rem;
     margin-bottom: 2rem;
-    color: var(--soft-cream);
+    color: #FF4F81;
     opacity: 0.95;
 }
 
@@ -273,7 +273,7 @@ nav a:hover {
         rgba(20, 29, 55, 0.9),
         rgba(20, 29, 55, 0.9)
     ), linear-gradient(45deg, var(--bright-pink), var(--vibrant-orange), var(--neon-green));
-    color: var(--soft-cream);
+    color: #FF4F81;
     padding: 6rem 0;
 }
 
@@ -415,7 +415,7 @@ nav a:hover {
 /* Footer */
 footer {
     background: var(--foiled-navy);
-    color: var(--soft-cream);
+    color: #FF4F81;
     padding: 3rem 0 1.5rem;
 }
 
@@ -436,7 +436,7 @@ footer {
     display: flex;
     align-items: center;
     gap: 12px;
-    color: var(--soft-cream);
+    color: #FF4F81;
     font-size: 1.5rem;
     font-weight: 600;
     text-decoration: none;
@@ -459,7 +459,7 @@ footer {
 }
 
 .footer-links a {
-    color: var(--soft-cream);
+    color: #FF4F81;
     text-decoration: none;
     opacity: 0.9;
     transition: opacity 0.3s;
@@ -516,7 +516,7 @@ footer {
     height: 40px;
     border-radius: 50%;
     background: rgba(250, 247, 240, 0.1);
-    color: var(--soft-cream);
+    color: #FF4F81;
     transition: all 0.3s;
 }
 
@@ -529,4 +529,72 @@ footer {
 .social-link svg {
     width: 20px;
     height: 20px;
+}
+
+/* Social Media Section */
+.social-section {
+    padding: 6rem 0;
+    background: white;
+}
+
+.social-section h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--foiled-navy);
+    font-weight: 600;
+    letter-spacing: -0.4pt;
+}
+
+.social-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    margin-bottom: 3rem;
+}
+
+.social-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.social-card {
+    background: var(--soft-cream);
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: 2px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.social-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(255, 79, 129, 0.3);
+    border-color: #FF4F81;
+}
+
+.social-card svg {
+    color: #FF4F81;
+    width: 32px;
+    height: 32px;
+}
+
+.social-card h3 {
+    color: var(--foiled-navy);
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.social-card p {
+    color: var(--text-dark);
+    margin: 0;
+    font-size: 0.95rem;
 }
