@@ -127,11 +127,17 @@ function setDefaultDueDate() {
 
 function saveConfig() {
     console.log('saveConfig called');
+    const accessCode = document.getElementById('accessCode') ? document.getElementById('accessCode').value.trim() : '';
     const canvasUrl = document.getElementById('canvasUrl').value.trim();
     const canvasToken = document.getElementById('canvasToken').value.trim();
 
     console.log('Canvas URL:', canvasUrl);
     console.log('Courses:', courses);
+
+    if (!accessCode) {
+        showMessage('Please enter your Access Code', 'error');
+        return;
+    }
 
     if (!canvasUrl || !canvasToken) {
         showMessage('Please fill in Canvas URL and API Token', 'error');
@@ -144,6 +150,7 @@ function saveConfig() {
     }
 
     const config = {
+        accessCode,
         canvasUrl,
         canvasToken,
         courses
@@ -267,6 +274,11 @@ function loadConfig() {
     const savedConfig = localStorage.getItem('canvasConfig');
     if (savedConfig) {
         const config = JSON.parse(savedConfig);
+        
+        if (config.accessCode && document.getElementById('accessCode')) {
+            document.getElementById('accessCode').value = config.accessCode;
+        }
+
         document.getElementById('canvasUrl').value = config.canvasUrl;
         document.getElementById('canvasToken').value = config.canvasToken;
         
@@ -426,6 +438,7 @@ async function createAssignment(config, course, title, description) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+            accessCode: config.accessCode,
             canvasUrl: config.canvasUrl,
             canvasToken: config.canvasToken,
             courseId: course.courseId,
@@ -457,6 +470,7 @@ async function createAnnouncement(config, course, title, message) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+            accessCode: config.accessCode,
             canvasUrl: config.canvasUrl,
             canvasToken: config.canvasToken,
             courseId: course.courseId,

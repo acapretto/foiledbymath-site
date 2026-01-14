@@ -21,8 +21,30 @@ exports.handler = async function(event, context) {
 
   try {
     const data = JSON.parse(event.body);
-    const { canvasUrl, canvasToken, courseId, assignmentData, announcementData, assignmentGroupName } = data;
+    const { canvasUrl, canvasToken, courseId, assignmentData, announcementData, assignmentGroupName, accessCode } = data;
     
+    // --- monetization check ---
+    // Simple hardcoded check for now. In future, this could be a DB lookup.
+    // Normalized to uppercase for case-insensitive check.
+    const validCodes = [
+        "FOILED-BY-MATH",      // Basic code
+        "FBM-2025-LAUNCH",     // TpT launch code
+        "TEACHER-VIP"          // Custom code
+    ];
+    
+    const userCode = (accessCode || '').trim().toUpperCase();
+    if (!validCodes.includes(userCode)) {
+        return {
+            statusCode: 403,
+            headers,
+            body: JSON.stringify({ 
+                error: 'Invalid Access Code', 
+                message: 'Please enter a valid Access Code to use this tool.' 
+            })
+        };
+    }
+    // --------------------------
+
     // Determine endpoint content
     let endpoint = '';
     let payload = {};

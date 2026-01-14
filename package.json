@@ -1,0 +1,23 @@
+{
+  "name": "foiledbymath-site",
+  "version": "1.0.0",
+  "description": "Landing Page for Foiled Bu Math",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/acapretto/foiledbymath-site.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/acapretto/foiledbymath-site/issues"
+  },
+  "homepage": "https://github.com/acapretto/foiledbymath-site#readme",
+  "devDependencies": {
+    "netlify-cli": "^23.13.3"
+  }
+}

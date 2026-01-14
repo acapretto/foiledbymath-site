@@ -7,13 +7,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Homework">
     <title>Homework Dictation - Canvas</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/apps/homework/styles.css">
 </head>
 <body>
     <div class="container">
         <header>
             <div class="logo-container">
-                <img src="assets/logo.png" alt="Foiled By Math Logo" class="app-logo">
+                <img src="/apps/homework/assets/logo.png" alt="Foiled By Math Logo" class="app-logo">
             </div>
             <h1>Homework Dictation</h1>
             <p class="subtitle">Quick Canvas posting via voice</p>
@@ -34,6 +34,10 @@
                     </div>
 
                     <div class="setup-form">
+                        <div class="form-group">
+                            <label for="accessCode">Access Code:</label>
+                            <input type="text" id="accessCode" placeholder="Enter your license code" />
+                        </div>
                         <div class="form-group">
                             <label for="canvasUrl">Canvas URL:</label>
                             <input type="text" id="canvasUrl" placeholder="https://yourschool.instructure.com" />
@@ -147,6 +151,6 @@
         </footer>
     </div>
 
-    <script src="app.js"></script>
+    <script src="/apps/homework/app.js"></script>
 </body>
 </html>
