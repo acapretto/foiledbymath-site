@@ -404,3 +404,41 @@ footer {
         font-size: 2em;
     }
 }
+
+/* Tutorial Video Styles */
+.tutorial-box {
+    margin-bottom: 20px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.tutorial-box summary {
+    cursor: pointer;
+    color: #4c51bf;
+    font-weight: 500;
+    user-select: none;
+}
+
+.tutorial-box summary:hover {
+    color: #434190;
+}
+
+.video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    margin-top: 10px;
+    background: #000;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
