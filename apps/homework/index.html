@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Homework">
+    <title>Homework Dictation - Canvas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📝 Homework Dictation</h1>
+            <p class="subtitle">Quick Canvas posting via voice</p>
+        </header>
+
+        <div class="main-card">
+            <!-- Canvas Configuration -->
+            <div class="config-section" id="configSection">
+                <h2>Setup</h2>
+                <div class="form-group">
+                    <label for="canvasUrl">Canvas URL:</label>
+                    <input type="text" id="canvasUrl" placeholder="https://yourschool.instructure.com" />
+                </div>
+                <div class="form-group">
+                    <label for="canvasToken">Canvas API Token:</label>
+                    <input type="password" id="canvasToken" placeholder="Your Canvas API token" />
+                </div>
+                
+                <h3 style="margin-top: 25px; margin-bottom: 15px; color: #667eea;">Your Courses</h3>
+                <div id="coursesList"></div>
+                
+                <div class="add-course-section">
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 2;">
+                            <label for="newCourseNickname">Course Nickname:</label>
+                            <input type="text" id="newCourseNickname" placeholder="e.g., Algebra 1 - Period 3" />
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="newCourseId">Course ID:</label>
+                            <input type="text" id="newCourseId" placeholder="e.g., 12345" />
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="addCourse()" style="width: 100%; margin-bottom: 15px;">+ Add Course</button>
+                </div>
+                
+                <button class="btn btn-primary" onclick="saveConfig()">Save Configuration</button>
+                <p class="help-text">
+                    <small>Get your API token from Canvas: Account → Settings → New Access Token</small>
+                </p>
+            </div>
+
+            <!-- Dictation Section (hidden until configured) -->
+            <div class="dictation-section" id="dictationSection" style="display: none;">
+                <div class="status-indicator" id="statusIndicator">
+                    <span class="status-dot"></span>
+                    <span id="statusText">Ready to dictate</span>
+                </div>
+
+                <!-- Post Type Selection -->
+                <div class="post-type">
+                    <label>
+                        <input type="radio" name="postType" value="assignment" checked />
+                        Assignment
+                    </label>
+                    <label>
+                        <input type="radio" name="postType" value="announcement" />
+                        Announcement
+                    </label>
+                </div>
+
+                <!-- Course Selection -->
+                <div class="course-selection">
+                    <div class="course-selection-header">
+                        <label>Post to:</label>
+                        <button class="btn btn-link-small" id="toggleAllBtn" onclick="toggleAllCourses()">All</button>
+                    </div>
+                    <div id="courseCheckboxes" class="course-checkboxes"></div>
+                </div>
+
+                <!-- Dictation Button -->
+                <button class="btn btn-record" id="recordBtn" onclick="toggleRecording()">
+                    <span class="mic-icon">🎤</span>
+                    <span id="recordText">Press to Dictate</span>
+                </button>
+
+                <!-- Transcription Display -->
+                <div class="transcription-box" id="transcriptionBox">
+                    <div class="form-group">
+                        <label for="title">Title:</label>
+                        <input type="text" id="title" placeholder="Title for homework" />
+                    </div>
+                    <div class="form-group">
+                        <label for="transcription">Description:</label>
+                        <textarea id="transcription" rows="6" placeholder="Dictated homework will appear here..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Assignment-specific fields (optional) -->
+                <div id="assignmentFields" class="assignment-fields">
+                    <div class="form-group">
+                        <label for="dueDate">Due Date (optional):</label>
+                        <input type="datetime-local" id="dueDate" />
+                    </div>
+                    <div class="form-group">
+                        <label for="points">Points (optional):</label>
+                        <input type="number" id="points" placeholder="e.g., 10" />
+                    </div>
+                    <div class="form-group">
+                        <label for="assignmentGroup">Group (optional):</label>
+                        <input type="text" id="assignmentGroup" placeholder="e.g., Homework" />
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="clearText()">Clear</button>
+                    <button class="btn btn-success" onclick="postToCanvas()" id="postBtn">
+                        Post to Canvas
+                    </button>
+                </div>
+
+                <div class="result-message" id="resultMessage"></div>
+            </div>
+        </div>
+
+        <footer>
+            <button class="btn btn-link" onclick="showConfig()">⚙️ Change Settings</button>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
