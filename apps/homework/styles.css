@@ -49,7 +49,7 @@ body {
 
 header {
     text-align: center;
-    color: white;
+    color: var(--soft-cream);
     margin-bottom: 30px;
 }
 
@@ -70,7 +70,8 @@ header h1 {
     font-weight: 600;
     font-size: 2.5em;
     margin-bottom: 10px;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.02em; /* Added space between letters */
+    color: var(--soft-cream);
 }
 
 .subtitle {
@@ -115,8 +116,9 @@ header h1 {
     border: 2px solid #e0e0e0;
     border-radius: 8px;
     font-size: 1em;
-    transition: border-color 0.3s;
+    transition: all 0.3s;
     font-family: 'PlusJakartaSans-Variable', sans-serif;
+    background: white;
 }
 
 .form-group input:focus,
@@ -151,7 +153,36 @@ header h1 {
 
 .btn-primary:hover {
     background: #d64d70;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(236, 93, 130, 0.3);
+}
+
+.btn-record {
+    width: 100%;
+    padding: 20px;
+    font-size: 1.2em;
+    background: var(--foiled-navy);
+    color: white;
+    margin: 20px 0;
+}
+
+.btn-record:hover {
+    background: #233152;
+}
+
+.btn-record.recording {
+    background: #e74c3c;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.mic-icon {
+    font-size: 1.5em;
+    margin-right: 10px;
 }
 
 .btn-secondary {
@@ -171,62 +202,8 @@ header h1 {
 
 .btn-success:hover {
     background: #00c47f;
-    transform: translateY(-1px);
-}
-
-
-.btn-primary:hover {
-    background: #5568d3;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.btn-record {
-    width: 100%;
-    padding: 20px;
-    font-size: 1.2em;
-    background: #667eea;
-    color: white;
-    margin: 20px 0;
-}
-
-.btn-record:hover {
-    background: #5568d3;
-}
-
-.btn-record.recording {
-    background: #e74c3c;
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
-.mic-icon {
-    font-size: 1.5em;
-    margin-right: 10px;
-}
-
-.btn-secondary {
-    background: #95a5a6;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background: #7f8c8d;
-}
-
-.btn-success {
-    background: #27ae60;
-    color: white;
-}
-
-.btn-success:hover {
-    background: #229954;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 224, 145, 0.3);
 }
 
 .btn-success:disabled {
@@ -246,16 +223,17 @@ header h1 {
     display: flex;
     align-items: center;
     padding: 12px;
-    background: #f8f9fa;
+    background: transparent; /* Removed grey background */
     border-radius: 8px;
     margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
 }
 
 .status-dot {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: #27ae60;
+    background: var(--neon-green);
     margin-right: 10px;
 }
 
@@ -274,7 +252,7 @@ header h1 {
     gap: 20px;
     margin-bottom: 20px;
     padding: 15px;
-    background: #f8f9fa;
+    background: transparent; /* Removed grey background */
     border-radius: 8px;
 }
 
@@ -288,14 +266,15 @@ header h1 {
 .post-type input[type="radio"] {
     margin-right: 8px;
     cursor: pointer;
+    accent-color: var(--bright-pink);
 }
 
 .assignment-fields {
     margin-bottom: 20px;
     padding: 15px;
-    background: #f0f4ff;
+    background: transparent; /* Removed blue background */
     border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid var(--bright-pink);
 }
 
 .assignment-fields.hidden {
@@ -313,8 +292,8 @@ header h1 {
 
 .add-course-section {
     margin-bottom: 20px;
-    padding: 15px;
-    background: #f8f9fa;
+    padding: 15px 0; /* Removed padding/background */
+    background: transparent; 
     border-radius: 8px;
 }
 
@@ -335,12 +314,12 @@ header h1 {
 
 .course-item-nickname {
     font-weight: 600;
-    color: #333;
+    color: var(--foiled-navy);
 }
 
 .course-item-id {
     font-size: 0.9em;
-    color: #666;
+    color: var(--text-light);
     margin-top: 3px;
 }
 
@@ -360,8 +339,8 @@ header h1 {
 
 .course-selection {
     margin-bottom: 20px;
-    padding: 15px;
-    background: #f8f9fa;
+    padding: 15px 0; /* Removed background */
+    background: transparent;
     border-radius: 8px;
 }
 
@@ -374,23 +353,24 @@ header h1 {
 
 .course-selection-header label {
     font-weight: 600;
-    color: #555;
+    color: var(--foiled-navy);
     margin: 0;
 }
 
 .btn-link-small {
     background: transparent;
-    color: #667eea;
+    color: var(--bright-pink);
     border: none;
     padding: 5px 10px;
     cursor: pointer;
     font-weight: 600;
     text-decoration: underline;
     font-size: 0.9em;
+    font-family: 'PlusJakartaSans-Variable', sans-serif;
 }
 
 .btn-link-small:hover {
-    color: #5568d3;
+    color: #d64d70;
 }
 
 .course-checkboxes {
@@ -411,13 +391,14 @@ header h1 {
 }
 
 .course-checkbox-item:hover {
-    border-color: #667eea;
-    background: #f0f4ff;
+    border-color: var(--bright-pink);
+    background: #fff;
 }
 
 .course-checkbox-item input[type="checkbox"] {
     margin-right: 8px;
     cursor: pointer;
+    accent-color: var(--bright-pink);
 }
 
 .course-checkbox-item label {
@@ -425,6 +406,7 @@ header h1 {
     cursor: pointer;
     font-weight: 500;
     font-size: 0.95em;
+    color: var(--text-dark);
 }
 
 .transcription-box {
