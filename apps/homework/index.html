@@ -21,44 +21,48 @@
             <div class="config-section" id="configSection">
                 <h2>Setup</h2>
                 
-                <details class="tutorial-box">
-                    <summary>▶️ <strong>Need help? Watch how to find your IDs</strong></summary>
-                    <div class="video-wrapper">
-                        <!-- Replace 'YOUR_VIDEO_ID' with the ID from your YouTube URL -->
-                        <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" title="Setup Tutorial" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <div class="setup-grid">
+                    <div class="setup-video">
+                        <p class="video-label">Watch setup tutorial:</p>
+                        <div class="video-wrapper">
+                            <!-- Replace 'YOUR_VIDEO_ID' with the ID from your YouTube URL -->
+                            <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" title="Setup Tutorial" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
                     </div>
-                </details>
 
-                <div class="form-group">
-                    <label for="canvasUrl">Canvas URL:</label>
-                    <input type="text" id="canvasUrl" placeholder="https://yourschool.instructure.com" />
-                </div>
-                <div class="form-group">
-                    <label for="canvasToken">Canvas API Token:</label>
-                    <input type="password" id="canvasToken" placeholder="Your Canvas API token" />
-                </div>
-                
-                <h3 style="margin-top: 25px; margin-bottom: 15px; color: #667eea;">Your Courses</h3>
-                <div id="coursesList"></div>
-                
-                <div class="add-course-section">
-                    <div class="form-row">
-                        <div class="form-group" style="flex: 2;">
-                            <label for="newCourseNickname">Course Nickname:</label>
-                            <input type="text" id="newCourseNickname" placeholder="e.g., Algebra 1 - Period 3" />
+                    <div class="setup-form">
+                        <div class="form-group">
+                            <label for="canvasUrl">Canvas URL:</label>
+                            <input type="text" id="canvasUrl" placeholder="https://yourschool.instructure.com" />
                         </div>
-                        <div class="form-group" style="flex: 1;">
-                            <label for="newCourseId">Course ID:</label>
-                            <input type="text" id="newCourseId" placeholder="e.g., 12345" />
+                        <div class="form-group">
+                            <label for="canvasToken">Canvas API Token:</label>
+                            <input type="password" id="canvasToken" placeholder="Your Canvas API token" />
                         </div>
+                        
+                        <h3 style="margin-top: 25px; margin-bottom: 15px; color: #667eea;">Your Courses</h3>
+                        <div id="coursesList"></div>
+                        
+                        <div class="add-course-section">
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 2;">
+                                    <label for="newCourseNickname">Course Nickname:</label>
+                                    <input type="text" id="newCourseNickname" placeholder="e.g., Algebra 1 - Period 3" />
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label for="newCourseId">Course ID:</label>
+                                    <input type="text" id="newCourseId" placeholder="e.g., 12345" />
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary" onclick="addCourse()" style="width: 100%; margin-bottom: 15px;">+ Add Course</button>
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="saveConfig()">Save Configuration</button>
+                        <p class="help-text">
+                            <small>Get your API token from Canvas: Account → Settings → New Access Token</small>
+                        </p>
                     </div>
-                    <button class="btn btn-secondary" onclick="addCourse()" style="width: 100%; margin-bottom: 15px;">+ Add Course</button>
                 </div>
-                
-                <button class="btn btn-primary" onclick="saveConfig()">Save Configuration</button>
-                <p class="help-text">
-                    <small>Get your API token from Canvas: Account → Settings → New Access Token</small>
-                </p>
             </div>
 
             <!-- Dictation Section (hidden until configured) -->
