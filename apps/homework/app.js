@@ -851,11 +851,14 @@ async function pushSyncData() {
             }
         } else {
             const req = data.requestId ? ` (ref: ${data.requestId})` : '';
-            throw new Error((data.error || 'Sync failed') + req);
+            const dbg = syncDebugEnabled && data.debug
+                ? ` [storage:${data.debug.storage}, local:${data.debug.isLocal}]`
+                : '';
+            throw new Error((data.error || 'Sync failed') + req + dbg);
         }
     } catch (e) {
         const friendly = e.message && e.message.includes('Cloud storage not configured')
-            ? 'Cloud Sync is not available in local testing. It will work after deployment.'
+            ? 'Cloud Sync is not available in local testing. It will work after deployment.' + (e.message.includes('ref:') ? ' ' + e.message.match(/\(ref:[^)]+\)/)?.[0] : '')
             : 'Sync failed: ' + e.message;
         showSyncMessage(friendly, 'error');
     }
@@ -885,11 +888,17 @@ async function pullSyncData() {
         if (!response.ok) {
             if (data.error && String(data.error).toLowerCase().includes('no data found')) {
                 const req = data.requestId ? ` (ref: ${data.requestId})` : '';
-                showMessage('No backup found for that email. Create a backup on another device first, then download here.' + req, 'error');
+                const dbg = syncDebugEnabled && data.debug
+                    ? ` [storage:${data.debug.storage}, local:${data.debug.isLocal}]`
+                    : '';
+                showMessage('No backup found for that email. Create a backup on another device first, then download here.' + req + dbg, 'error');
                 return;
             }
             const req = data.requestId ? ` (ref: ${data.requestId})` : '';
-            throw new Error((data.error || 'Failed to download') + req);
+            const dbg = syncDebugEnabled && data.debug
+                ? ` [storage:${data.debug.storage}, local:${data.debug.isLocal}]`
+                : '';
+            throw new Error((data.error || 'Failed to download') + req + dbg);
         }
         
         // Handle Sync Bundle
