@@ -795,11 +795,14 @@ function toggleSyncMenu() {
 }
 
 async function pushSyncData() {
-    const email = document.getElementById('syncEmailInput').value.trim();
+    const emailInput = document.getElementById('syncEmailInput');
+    const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
     if (!email) {
         showSyncMessage('Please enter an email to identify your backup', 'error');
         return;
     }
+
+    if (emailInput) emailInput.value = email;
     
     localStorage.setItem('syncEmail', email);
     
@@ -856,11 +859,14 @@ async function pushSyncData() {
 }
 
 async function pullSyncData() {
-    const email = document.getElementById('syncUserId').value.trim();
+    const emailInput = document.getElementById('syncUserId');
+    const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
     if (!email) {
         showMessage('Please enter your email', 'error');
         return;
     }
+
+    if (emailInput) emailInput.value = email;
     
     try {
         const response = await fetch('/.netlify/functions/vault-sync', {
