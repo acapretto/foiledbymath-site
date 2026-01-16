@@ -642,7 +642,7 @@ function setDefaultDueDate(force = false) {
 // --- Vault Handlers ---
 
 async function unlockVaultHandler() {
-    const password = document.getElementById('unlockPass').value;
+    const password = document.getElementById('unlockPass').value.trim();
     const encryptedVault = localStorage.getItem('canvasVault');
     
     if (!encryptedVault) return; // Should not happen in this state
@@ -691,7 +691,7 @@ function startAutoLockTimer() {
 
 async function inlineUnlockHandler() {
     const passInput = document.getElementById('inlineUnlockPass');
-    const password = passInput ? passInput.value : '';
+    const password = passInput ? passInput.value.trim() : '';
     const encryptedVault = localStorage.getItem('canvasVault');
 
     if (!encryptedVault || !password) {
