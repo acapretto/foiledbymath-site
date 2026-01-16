@@ -157,10 +157,14 @@ function getCorsOrigin(event) {
 exports.handler = async function(event, context) {
     const requestId = crypto.randomBytes(8).toString('hex');
     const debugEnabled = event.queryStringParameters?.debug === '1';
+    const hasSiteId = Boolean(process.env.NETLIFY_BLOBS_SITE_ID);
+    const hasToken = Boolean(process.env.NETLIFY_BLOBS_TOKEN);
     const debugInfo = debugEnabled ? {
         requestId,
         storage: getStorageMode(),
         isLocal: IS_LOCAL,
+        hasSiteId,
+        hasToken,
         time: new Date().toISOString()
     } : undefined;
 
@@ -190,7 +194,14 @@ exports.handler = async function(event, context) {
 
     const { deviceId, userId, action, vaultBlob } = JSON.parse(event.body || '{}');
     const userHash = hashUserId(userId);
-    console.info('vault-sync request', { requestId, action, userHash, storage: getStorageMode() });
+    console.info('vault-sync request', {
+        requestId,
+        action,
+        userHash,
+        storage: getStorageMode(),
+        hasSiteId: Boolean(process.env.NETLIFY_BLOBS_SITE_ID),
+        hasToken: Boolean(process.env.NETLIFY_BLOBS_TOKEN)
+    });
 
   if (!userId) {
     return { 
