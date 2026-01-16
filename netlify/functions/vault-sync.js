@@ -107,7 +107,7 @@ async function saveStoreData(userId, data) {
         } catch (e) {
             console.error('Cloud Blob Write Error:', e);
             // This will fail if Blobs aren't enabled, which is the correct "fail secure" behavior
-            throw new Error('Cloud storage not configured. Please enable Netlify Blobs.');
+            throw new Error(`Cloud storage not configured. Please enable Netlify Blobs. ${e.message || ''}`.trim());
         }
     }
 }
