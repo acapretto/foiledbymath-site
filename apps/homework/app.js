@@ -859,8 +859,11 @@ async function pushSyncData() {
     } catch (e) {
         const refMatch = e.message && e.message.includes('ref:') ? e.message.match(/\(ref:[^)]+\)/)?.[0] : '';
         const storageMatch = e.message && e.message.includes('[storage:') ? e.message.match(/\[storage:[^\]]+\]/)?.[0] : '';
+        const detail = e.message && e.message.includes('Cloud storage not configured')
+            ? e.message.replace('Cloud storage not configured. Please enable Netlify Blobs.', '').trim()
+            : '';
         const friendly = e.message && e.message.includes('Cloud storage not configured')
-            ? `Cloud Sync is not available in local testing. It will work after deployment.${refMatch ? ' ' + refMatch : ''}${storageMatch ? ' ' + storageMatch : ''}`
+            ? `Cloud Sync is not available in local testing. It will work after deployment.${refMatch ? ' ' + refMatch : ''}${storageMatch ? ' ' + storageMatch : ''}${detail ? ' ' + detail : ''}`
             : 'Sync failed: ' + e.message;
         showSyncMessage(friendly, 'error');
     }
