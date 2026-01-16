@@ -857,8 +857,10 @@ async function pushSyncData() {
             throw new Error((data.error || 'Sync failed') + req + dbg);
         }
     } catch (e) {
+        const refMatch = e.message && e.message.includes('ref:') ? e.message.match(/\(ref:[^)]+\)/)?.[0] : '';
+        const storageMatch = e.message && e.message.includes('[storage:') ? e.message.match(/\[storage:[^\]]+\]/)?.[0] : '';
         const friendly = e.message && e.message.includes('Cloud storage not configured')
-            ? 'Cloud Sync is not available in local testing. It will work after deployment.' + (e.message.includes('ref:') ? ' ' + e.message.match(/\(ref:[^)]+\)/)?.[0] : '')
+            ? `Cloud Sync is not available in local testing. It will work after deployment.${refMatch ? ' ' + refMatch : ''}${storageMatch ? ' ' + storageMatch : ''}`
             : 'Sync failed: ' + e.message;
         showSyncMessage(friendly, 'error');
     }
