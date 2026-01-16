@@ -1,0 +1,20 @@
+{
+  "name": "Homework Dictation",
+  "short_name": "Homework",
+  "start_url": "/apps/homework/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#667eea",
+  "icons": [
+    {
+      "src": "/apps/homework/assets/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/apps/homework/assets/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

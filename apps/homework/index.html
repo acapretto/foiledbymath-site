@@ -8,6 +8,8 @@
     <meta name="apple-mobile-web-app-title" content="Homework">
     <title>Homework Dictation - Canvas</title>
     <link rel="stylesheet" href="/apps/homework/styles.css">
+    <link rel="manifest" href="/apps/homework/manifest.json">
+    <link rel="apple-touch-icon" href="/apps/homework/assets/logo.png">
 </head>
 <body>
     <div class="container">
@@ -42,15 +44,105 @@
                             <label for="canvasUrl">Canvas URL:</label>
                             <input type="text" id="canvasUrl" placeholder="https://yourschool.instructure.com" />
                         </div>
-                        <div class="form-group">
-                            <label for="canvasToken">Canvas API Token:</label>
-                            <input type="password" id="canvasToken" placeholder="Your Canvas API token" />
+                        
+                        <!-- Create Vault UI Structure -->
+                        <div id="vault-section" style="margin-bottom: 20px; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff;">
+                            <h3 style="margin-bottom: 15px; color: var(--foiled-navy);">Secure Connection</h3>
+                            
+                            <!-- State 1: Setup (Visible if no vault) -->
+                            <div id="vault-setup" style="display:none;">
+                                <!-- Option A: New Local Setup -->
+                                <div id="vault-setup-local">
+                                    <div class="form-group">
+                                        <label for="newCanvasToken">Canvas API Token:</label>
+                                        <input type="password" id="newCanvasToken" placeholder="Paste your new token here" />
+                                        <small style="display:block; margin-top:5px; color:var(--text-light);">Get your API token from Canvas: Account → Settings → New Access Token</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newVaultPass">Create Password:</label>
+                                        <input type="password" id="newVaultPass" placeholder="Password to encrypt this token" />
+                                        <small style="display:block; margin-top:5px; color:var(--text-light);">This password encrypts your token locally. We cannot recover it.</small>
+                                    </div>
+                                    <div style="margin-top: 15px; text-align: center;">
+                                        <button class="btn btn-link-small" id="showSyncLoginBtn">Already have a synced account?</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Option B: Sync Login -->
+                                <div id="vault-setup-sync" style="display:none; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;">
+                                    <p style="text-align:center; font-weight:600; margin-bottom:10px;">Sync Login</p>
+                                    <div class="form-group">
+                                        <label>Email / User ID:</label>
+                                        <input type="email" id="syncUserId" placeholder="you@school.edu" />
+                                    </div>
+                                    <button class="btn btn-secondary w-100" id="syncDownloadBtn">Download & Sync</button>
+                                    <button class="btn btn-link-small w-100" id="syncBackBtn">Back to New Setup</button>
+                                </div>
+                            </div>
+
+                            <!-- State 2: Locked (Visible if vault exists but locked) -->
+                            <div id="vault-locked" style="display:none;">
+                                <div class="status-indicator error" style="padding: 8px; margin-bottom: 10px;">
+                                     <span class="status-dot" style="background:red;"></span> Connection Locked
+                                </div>
+                                <div class="form-group">
+                                    <label for="unlockPass">Password:</label>
+                                    <div style="display:flex; gap:10px;">
+                                        <input type="password" id="unlockPass" placeholder="Enter password back to unlock" />
+                                        <button class="btn btn-secondary" id="unlockVaultBtn" style="width: auto;">Unlock</button>
+                                    </div>
+                                    <button class="btn btn-link-small" id="resetVaultBtn" style="color:#d9534f; margin-top:5px; padding-left:0;">Reset Connection</button>
+                                </div>
+                            </div>
+
+                            <!-- State 3: Unlocked (Visible if unlocked) -->
+                            <div id="vault-unlocked" style="display:none;">
+                                <div class="status-indicator success" style="padding: 8px; margin-bottom: 10px;">
+                                     <span class="status-dot"></span> Connection Unlocked
+                                </div>
+                                <p class="help-text" style="margin-bottom: 10px;">Token is ready for use.</p>
+                                
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <button class="btn btn-secondary" id="lockVaultBtn" style="padding: 5px 15px; font-size: 0.9em;">Lock Now</button>
+                                    
+                                    <!-- Sync Controls -->
+                                    <button class="btn btn-link-small" id="toggleSyncMenuBtn">Cloud Sync Options</button>
+                                </div>
+                                
+                                <div id="sync-menu" style="display:none; margin-top:10px; background:#f8fafc; padding:10px; border-radius:6px;">
+                                    <p style="font-size:0.9em; margin-bottom:0;"><strong>Cloud Sync</strong><br>Use the setup section to sync across devices.</p>
+                                </div>
+                            </div>
                         </div>
                         
                         <h3 style="margin-top: 25px; margin-bottom: 15px; color: #667eea;">Your Courses</h3>
+                        <div id="configMessage" class="result-message" style="margin-bottom:15px;"></div>
+                        <div style="margin-bottom: 15px; padding: 12px; border: 1px dashed #e2e8f0; border-radius: 8px; background: #f8fafc;">
+                            <p style="margin: 0 0 8px; font-weight: 600;">Import Courses from Canvas</p>
+                            <p style="margin: 0 0 10px; font-size: 0.9em; color: var(--text-light);">Pull your active courses and select which to add below.</p>
+                            <button class="btn btn-secondary" id="fetchCoursesBtn" style="width: 100%; margin-bottom: 10px;">Fetch Active Courses</button>
+                            <div id="fetchedCourses" style="max-height: 200px; overflow: auto; display: none; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; background: #fff;"></div>
+                            <button class="btn btn-secondary" id="addFetchedCoursesBtn" style="width: 100%; margin-top: 8px; display: none;">Add Selected Courses</button>
+                        </div>
                         <div id="coursesList"></div>
+
+                        <div id="sync-after-courses" style="margin: 15px 0; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc;">
+                            <p style="margin: 0 0 8px; font-weight: 600;">Sync Across Devices</p>
+                            <p style="margin: 0 0 10px; font-size: 0.9em; color: var(--text-light);">Optional: back up your encrypted connection to access on other devices.</p>
+                            <input type="email" id="syncEmailInput" placeholder="Enter your email (e.g. you@school.edu)" style="margin-bottom:8px; width:100%; padding:10px; font-size:1rem;">
+                            <label style="display:flex; align-items:flex-start; gap:8px; font-size:0.9em; margin:6px 0 10px; color:var(--text-light);">
+                                <input type="checkbox" id="newsletterOptIn" style="margin-top:3px;">
+                                <span>Join our newsletter and sync across all your devices! We’ll only use your email for product updates and tips.</span>
+                            </label>
+                            <button class="btn btn-secondary" style="width:100%; margin-bottom:5px;" id="syncBackupBtn" disabled>Sync / Backup Now</button>
+                            <small id="syncStatus" style="color:var(--text-light);"></small>
+                            <button class="btn btn-link-small" id="deleteCloudBackupBtn" style="width:100%; margin-top:8px; color:#d9534f;">Delete Cloud Backup</button>
+                            <div id="syncMessage" class="result-message" style="margin-top:10px;"></div>
+                        </div>
+
+                        <button class="btn btn-secondary" id="toggleManualCoursesBtn" style="width: 100%; margin: 10px 0 15px;">Or . . . Manually Add Courses</button>
                         
-                        <div class="add-course-section">
+                        <div class="add-course-section" id="manualCourseSection" style="display: none;">
                             <div class="form-row">
                                 <div class="form-group" style="flex: 2;">
                                     <label for="newCourseNickname">Course Nickname:</label>
@@ -61,12 +153,13 @@
                                     <input type="text" id="newCourseId" placeholder="e.g., 12345" />
                                 </div>
                             </div>
-                            <button class="btn btn-secondary" onclick="addCourse()" style="width: 100%; margin-bottom: 15px;">+ Add Course</button>
+                            <button class="btn btn-secondary" id="addCourseBtn" style="width: 100%; margin-bottom: 15px;">+ Add Course</button>
                         </div>
                         
-                        <button class="btn btn-primary" onclick="saveConfig()">Save Configuration</button>
-                        <p class="help-text">
-                            <small>Get your API token from Canvas: Account → Settings → New Access Token</small>
+                        <button class="btn btn-primary" id="saveConfigBtn">Save Configuration</button>
+                        <button class="btn btn-link-small" id="eraseLocalDataBtn" style="width:100%; margin-top:8px; color:#d9534f;">Erase Local Data</button>
+                        <p style="text-align: center; margin-top: 15px;">
+                            <a href="/apps/homework/terms.html" target="_blank" style="color: var(--text-light); text-decoration: underline; font-size: 0.85em;">Terms of Service</a>
                         </p>
                     </div>
                 </div>
@@ -74,6 +167,14 @@
 
             <!-- Dictation Section (hidden until configured) -->
             <div class="dictation-section" id="dictationSection" style="display: none;">
+                <div id="inlineUnlock" style="display:none; margin-bottom: 12px; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff;">
+                    <p style="margin: 0 0 8px; font-weight: 600;">Secure Connection Locked</p>
+                    <div style="display:flex; gap:10px;">
+                        <input type="password" id="inlineUnlockPass" placeholder="Enter password to unlock" style="flex:1;" />
+                        <button class="btn btn-secondary" id="inlineUnlockBtn" style="width:auto;">Unlock</button>
+                    </div>
+                    <div id="inlineUnlockMessage" class="result-message" style="margin-top:8px;"></div>
+                </div>
                 <div class="status-indicator" id="statusIndicator">
                     <span class="status-dot"></span>
                     <span id="statusText">Ready to dictate</span>
@@ -95,13 +196,13 @@
                 <div class="course-selection">
                     <div class="course-selection-header">
                         <label>Post to:</label>
-                        <button class="btn btn-link-small" id="toggleAllBtn" onclick="toggleAllCourses()">All</button>
+                        <button class="btn btn-link-small" id="toggleAllBtn">All</button>
                     </div>
                     <div id="courseCheckboxes" class="course-checkboxes"></div>
                 </div>
 
                 <!-- Dictation Button -->
-                <button class="btn btn-record" id="recordBtn" onclick="toggleRecording()">
+                <button class="btn btn-record" id="recordBtn">
                     <span class="mic-icon">🎤</span>
                     <span id="recordText">Press to Dictate</span>
                 </button>
@@ -116,6 +217,10 @@
                         <label for="transcription">Description:</label>
                         <textarea id="transcription" rows="6" placeholder="Dictated homework will appear here..."></textarea>
                     </div>
+                    <div class="form-group">
+                        <label>Preview:</label>
+                        <div id="descriptionPreview" style="min-height: 80px; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc; overflow: hidden;"></div>
+                    </div>
                 </div>
 
                 <!-- Assignment-specific fields (optional) -->
@@ -129,28 +234,44 @@
                         <input type="number" id="points" placeholder="e.g., 10" />
                     </div>
                     <div class="form-group">
-                        <label for="assignmentGroup">Group (optional):</label>
-                        <input type="text" id="assignmentGroup" placeholder="e.g., Homework" />
+                        <label for="assignmentGroupSelect">Group (optional):</label>
+                        <div style="display:flex; gap:10px;">
+                            <select id="assignmentGroupSelect" style="flex:1;">
+                                <option value="">Select a group</option>
+                            </select>
+                        </div>
+                        <small style="display:block; margin-top:5px; color:var(--text-light);">Courses without specified group may post to a different group.</small>
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="display:flex; align-items:center; gap:8px;">
+                        <input type="checkbox" id="postAsDraft">
+                        <span>Post as draft / unpublished</span>
+                    </label>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <button class="btn btn-secondary" onclick="clearText()">Clear</button>
-                    <button class="btn btn-success" onclick="postToCanvas()" id="postBtn">
+                    <button class="btn btn-secondary" id="clearBtn">Clear</button>
+                    <button class="btn btn-success" id="postBtn">
                         Post to Canvas
                     </button>
                 </div>
+
+                <button class="btn btn-secondary" id="openInCanvasBtn" style="width:100%; margin-top:10px; display:none;">Open in Canvas</button>
 
                 <div class="result-message" id="resultMessage"></div>
             </div>
         </div>
 
         <footer>
-            <button class="btn btn-link" onclick="showConfig()">⚙️ Change Settings</button>
+            <button class="btn btn-secondary" id="installAppBtn" style="margin-bottom:10px;">Add to the Home Screen / Bookmark</button>
+            <button class="btn btn-link" id="showConfigBtn">⚙️ Change Settings</button>
         </footer>
     </div>
 
+    <script src="/apps/homework/vault.js"></script>
     <script src="/apps/homework/app.js"></script>
 </body>
 </html>

@@ -413,6 +413,16 @@ header h1 {
     margin-top: 20px;
 }
 
+#descriptionPreview ul {
+    margin: 0.4em 0;
+    padding-left: 1.2em;
+    list-style-position: inside;
+}
+
+#descriptionPreview li {
+    margin: 0.2em 0;
+}
+
 .action-buttons {
     display: flex;
     gap: 15px;

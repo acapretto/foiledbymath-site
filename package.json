@@ -17,6 +17,9 @@
     "url": "https://github.com/acapretto/foiledbymath-site/issues"
   },
   "homepage": "https://github.com/acapretto/foiledbymath-site#readme",
+  "dependencies": {
+    "@netlify/blobs": "^7.0.0"
+  },
   "devDependencies": {
     "netlify-cli": "^23.13.3"
   }
