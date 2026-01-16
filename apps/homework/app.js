@@ -95,9 +95,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Load saved assignment group or default to 'Homework'
     const savedGroup = localStorage.getItem('lastAssignmentGroup');
-    const groupInput = document.getElementById('assignmentGroup');
-    if (groupInput) {
-        groupInput.value = savedGroup || 'Homework';
+    const groupSelect = document.getElementById('assignmentGroupSelect');
+    if (groupSelect && savedGroup) {
+        const savedOption = Array.from(groupSelect.options).find(opt => opt.value === savedGroup);
+        if (savedOption) groupSelect.value = savedGroup;
     }
     
     // Toggle assignment fields based on post type
@@ -182,15 +183,7 @@ function bindNewsletterGate() {
 }
 
 function applyDefaultSetupValues() {
-    const accessCodeInput = document.getElementById('accessCode');
-    if (accessCodeInput && !accessCodeInput.value) {
-        accessCodeInput.value = 'FOILED-BY-MATH';
-    }
-
-    const canvasUrlInput = document.getElementById('canvasUrl');
-    if (canvasUrlInput && !canvasUrlInput.value) {
-        canvasUrlInput.value = 'https://wjhsd.instructure.com';
-    }
+    return;
 }
 
 function toggleManualCourses() {
@@ -507,7 +500,7 @@ function handleInstallClick() {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     const isMobile = /iphone|ipad|ipod|android/i.test(navigator.userAgent);
     if (isIOS) {
-        showMessage('Safari (iOS): tap Share → Add to Home Screen.', 'success');
+            showMessage('Safari (iOS): tap the … menu → Share → Add to Home Screen.', 'success');
         return;
     }
 
@@ -879,7 +872,13 @@ async function pullSyncData() {
         });
         
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Failed to download');
+        if (!response.ok) {
+            if (data.error && String(data.error).toLowerCase().includes('no data found')) {
+                showMessage('No backup found for that email. Create a backup on another device first, then download here.', 'error');
+                return;
+            }
+            throw new Error(data.error || 'Failed to download');
+        }
         
         // Handle Sync Bundle
         let isFullRestore = false;
@@ -973,9 +972,23 @@ async function saveConfig() {
         showMessage('Please enter Access Code', 'error');
         return;
     }
+
+    if (courses.length === 0) {
+        const fetchedContainer = document.getElementById('fetchedCourses');
+        if (fetchedContainer) {
+            const selectedFetched = fetchedContainer.querySelectorAll('input[type="checkbox"]:checked');
+            if (selectedFetched.length > 0) {
+                addSelectedFetchedCourses();
+            }
+        }
+    }
     
     if (courses.length === 0) {
-        showMessage('Please add at least one course', 'error');
+        showMessage('Please add at least one course (select from the fetched list and click “Add Selected Courses”).', 'error');
+        const fetchedContainer = document.getElementById('fetchedCourses');
+        if (fetchedContainer) {
+            fetchedContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
         return;
     }
 
@@ -992,6 +1005,10 @@ async function saveConfig() {
     document.getElementById('configSection').style.display = 'none';
     document.getElementById('dictationSection').style.display = 'block';
     renderCourseCheckboxes();
+
+    if (sessionToken) {
+        fetchAssignmentGroups({ silent: true });
+    }
     
     showMessage('Configuration saved successfully!', 'success');
 }
@@ -1350,6 +1367,15 @@ function setDefaultAssignmentGroup() {
     const select = document.getElementById('assignmentGroupSelect');
     if (!select) return;
 
+    const savedGroup = localStorage.getItem('lastAssignmentGroup');
+    if (savedGroup) {
+        const savedOption = Array.from(select.options).find(opt => opt.value === savedGroup);
+        if (savedOption) {
+            select.value = savedGroup;
+            return;
+        }
+    }
+
     const homeworkOption = Array.from(select.options).find(opt => /homework/i.test(opt.value));
     if (homeworkOption) {
         select.value = homeworkOption.value;
@@ -1617,7 +1643,8 @@ async function postToCanvas() {
     postBtn.textContent = 'Posting...';
 
     // Save assignment group preference
-    const groupName = document.getElementById('assignmentGroup').value;
+    const groupSelect = document.getElementById('assignmentGroupSelect');
+    const groupName = groupSelect ? groupSelect.value : '';
     if (groupName) {
         localStorage.setItem('lastAssignmentGroup', groupName);
     }
@@ -1757,6 +1784,12 @@ function showMessage(message, type) {
         configMessage.textContent = message;
         configMessage.className = `result-message ${type}`;
         configMessage.style.display = 'block';
+        if (type === 'error') {
+            const configSection = document.getElementById('configSection');
+            if (configSection && configSection.style.display !== 'none') {
+                configMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
     }
     
     // Auto-hide success messages after 5 seconds
