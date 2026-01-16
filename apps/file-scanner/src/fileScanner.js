@@ -6,6 +6,10 @@ const pdfParse = require('pdf-parse');
 const exifParser = require('exif-parser');
 const mime = require('mime-types');
 
+// Constants
+const MAX_CONTENT_LENGTH = 10000; // Maximum characters to read from file content
+const MAX_FILE_SIZE_FOR_CONTENT = 50 * 1024 * 1024; // 50MB - max file size to read into memory
+
 class FileScanner {
   constructor() {
     this.ocrWorker = null;
@@ -164,17 +168,24 @@ class FileScanner {
 
   async extractContent(filePath, mimeType, extension) {
     try {
+      // Check file size first to prevent memory exhaustion
+      const stats = await fs.stat(filePath);
+      if (stats.size > MAX_FILE_SIZE_FOR_CONTENT) {
+        console.warn(`File ${filePath} is too large (${stats.size} bytes), skipping content extraction`);
+        return null;
+      }
+
       // Extract text from text files
       if (mimeType.startsWith('text/') || ['.txt', '.md', '.json', '.xml', '.html', '.css', '.js'].includes(extension)) {
         const content = await fs.readFile(filePath, 'utf-8');
-        return content.substring(0, 10000); // Limit to first 10k characters
+        return content.substring(0, MAX_CONTENT_LENGTH);
       }
 
       // Extract text from PDFs
       if (extension === '.pdf') {
         const buffer = await fs.readFile(filePath);
         const pdfData = await pdfParse(buffer);
-        return pdfData.text.substring(0, 10000);
+        return pdfData.text.substring(0, MAX_CONTENT_LENGTH);
       }
     } catch (error) {
       console.error('Error extracting content:', error);
@@ -295,13 +306,19 @@ class FileScanner {
   }
 
   extractKeywords(text) {
-    // Simple keyword extraction based on frequency
-    const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been', 'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'should', 'could', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those']);
+    // Stop words to filter out
+    const STOP_WORDS = new Set([
+      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+      'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been',
+      'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would',
+      'should', 'could', 'may', 'might', 'must', 'can', 'this', 'that',
+      'these', 'those'
+    ]);
     
     const words = text.toLowerCase()
       .replace(/[^\w\s]/g, ' ')
       .split(/\s+/)
-      .filter(word => word.length > 3 && !stopWords.has(word));
+      .filter(word => word.length > 3 && !STOP_WORDS.has(word));
 
     const frequency = {};
     words.forEach(word => {

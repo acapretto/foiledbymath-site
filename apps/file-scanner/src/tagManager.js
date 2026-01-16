@@ -1,9 +1,10 @@
-const { exec } = require('child_process');
+const { execFile } = require('child_process');
 const { promisify } = require('util');
 const path = require('path');
+const fs = require('fs').promises;
 const Store = require('electron-store');
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 class TagManager {
   constructor() {
@@ -20,7 +21,7 @@ class TagManager {
 
   /**
    * Apply macOS Finder tags to a file
-   * Uses the 'tag' command-line tool or xattr
+   * Uses the 'tag' command-line tool or xattr with proper escaping
    */
   async applyFinderTags(filePath, tags) {
     if (process.platform !== 'darwin') {
@@ -29,23 +30,26 @@ class TagManager {
     }
 
     try {
-      // Use xattr to set tags (works natively on macOS)
-      const tagString = tags.join(',');
       const plistContent = this.generateTagPlist(tags);
       
-      // Write tags using xattr
-      await execAsync(`xattr -w com.apple.metadata:_kMDItemUserTags '${plistContent}' "${filePath}"`);
+      // Write tags using xattr with proper file path handling
+      await execFileAsync('xattr', [
+        '-w',
+        'com.apple.metadata:_kMDItemUserTags',
+        plistContent,
+        filePath
+      ]);
       
       // Also set Finder tags using osascript (AppleScript)
-      const tagsAppleScript = tags.map(tag => `"${tag}"`).join(', ');
-      const script = `
-        tell application "Finder"
-          set theFile to POSIX file "${filePath}" as alias
-          set tags of theFile to {${tagsAppleScript}}
-        end tell
-      `;
+      // Use proper escaping for AppleScript strings
+      const escapeAppleScript = (str) => str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      const tagsAppleScript = tags.map(tag => `"${escapeAppleScript(tag)}"`).join(', ');
+      const script = `tell application "Finder"
+  set theFile to POSIX file "${escapeAppleScript(filePath)}" as alias
+  set tags of theFile to {${tagsAppleScript}}
+end tell`;
       
-      await execAsync(`osascript -e '${script.replace(/'/g, "'\\''")}'`);
+      await execFileAsync('osascript', ['-e', script]);
     } catch (error) {
       console.error('Error applying Finder tags:', error);
       throw error;
@@ -53,10 +57,19 @@ class TagManager {
   }
 
   /**
-   * Generate plist format for macOS tags
+   * Generate plist format for macOS tags with proper XML escaping
    */
   generateTagPlist(tags) {
-    const tagElements = tags.map(tag => `<string>${tag}</string>`).join('');
+    const escapeXML = (str) => {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+    };
+    
+    const tagElements = tags.map(tag => `<string>${escapeXML(tag)}</string>`).join('');
     return `<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><array>${tagElements}</array></plist>`;
   }
 
@@ -69,7 +82,11 @@ class TagManager {
     }
 
     try {
-      const { stdout } = await execAsync(`xattr -p com.apple.metadata:_kMDItemUserTags "${filePath}" 2>/dev/null || echo ""`);
+      const { stdout } = await execFileAsync('xattr', [
+        '-p',
+        'com.apple.metadata:_kMDItemUserTags',
+        filePath
+      ]).catch(() => ({ stdout: '' }));
       
       if (!stdout.trim()) {
         return [];
@@ -185,7 +202,7 @@ class TagManager {
 
     // Create saved searches directory if it doesn't exist
     try {
-      await execAsync(`mkdir -p "${savedSearchesPath}"`);
+      await fs.mkdir(savedSearchesPath, { recursive: true });
     } catch (error) {
       console.error('Error creating saved searches directory:', error);
     }
@@ -197,9 +214,11 @@ class TagManager {
     // Create the plist for the smart folder
     const plistContent = this.generateSmartFolderPlist(folderName, query);
 
-    // Write the plist file
+    // Write the plist file using Node.js fs
     try {
-      await execAsync(`cat > "${savedSearchPath}/query.plist" <<'EOF'\n${plistContent}\nEOF`);
+      await fs.mkdir(savedSearchPath, { recursive: true });
+      const plistPath = path.join(savedSearchPath, 'query.plist');
+      await fs.writeFile(plistPath, plistContent, 'utf-8');
       
       // Store in our database
       const smartFolders = this.store.get('smartFolders') || {};
@@ -301,7 +320,7 @@ class TagManager {
       const savedSearchPath = path.join(userHome, 'Library', 'Saved Searches', `${folderName}.savedSearch`);
       
       try {
-        await execAsync(`rm -rf "${savedSearchPath}"`);
+        await fs.rm(savedSearchPath, { recursive: true, force: true });
       } catch (error) {
         console.error('Error deleting smart folder file:', error);
       }

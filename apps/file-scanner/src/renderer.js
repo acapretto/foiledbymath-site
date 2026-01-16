@@ -336,7 +336,7 @@ async function handleCreateSmartFolder() {
   const modifiedAfter = document.getElementById('modified-after').value;
 
   if (!folderName) {
-    alert('Please enter a folder name');
+    updateStatus('Please enter a folder name', 'error');
     return;
   }
 
