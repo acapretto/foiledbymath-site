@@ -151,6 +151,7 @@ function bindUiEvents() {
     bindClick('lockVaultBtn', lockVaultHandler);
     bindClick('toggleSyncMenuBtn', toggleSyncMenu);
     bindClick('syncBackupBtn', pushSyncData);
+    bindClick('syncDownloadNowBtn', pullSyncData);
     bindClick('addCourseBtn', addCourse);
     bindClick('saveConfigBtn', saveConfig);
     bindClick('toggleAllBtn', toggleAllCourses);
@@ -167,6 +168,7 @@ function bindUiEvents() {
     bindClick('installAppBtn', handleInstallClick);
     bindClick('inlineUnlockBtn', inlineUnlockHandler);
     bindNewsletterGate();
+    bindFetchedCoursesButtonState();
 }
 
 function bindNewsletterGate() {
@@ -176,11 +178,28 @@ function bindNewsletterGate() {
     if (!checkbox || !syncBtn) return;
 
     const updateState = () => {
-        syncBtn.disabled = !checkbox.checked;
+        const isChecked = checkbox.checked;
+        syncBtn.disabled = !isChecked;
+        syncBtn.classList.toggle('btn-primary', isChecked);
+        syncBtn.classList.toggle('btn-secondary', !isChecked);
     };
 
     checkbox.addEventListener('change', updateState);
     updateState();
+}
+
+function bindFetchedCoursesButtonState() {
+    updateFetchedCoursesButtonState();
+}
+
+function updateFetchedCoursesButtonState() {
+    const container = document.getElementById('fetchedCourses');
+    const addBtn = document.getElementById('addFetchedCoursesBtn');
+    if (!container || !addBtn) return;
+
+    const hasChecked = container.querySelectorAll('input[type="checkbox"]:checked').length > 0;
+    addBtn.classList.toggle('btn-primary', hasChecked);
+    addBtn.classList.toggle('btn-secondary', !hasChecked);
 }
 
 function applyDefaultSetupValues() {
@@ -871,13 +890,17 @@ async function pushSyncData() {
 
 async function pullSyncData() {
     const emailInput = document.getElementById('syncUserId');
-    const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+    const fallbackInput = document.getElementById('syncEmailInput');
+    const email = emailInput && emailInput.value.trim()
+        ? emailInput.value.trim().toLowerCase()
+        : (fallbackInput ? fallbackInput.value.trim().toLowerCase() : '');
     if (!email) {
         showMessage('Please enter your email', 'error');
         return;
     }
 
     if (emailInput) emailInput.value = email;
+    if (fallbackInput) fallbackInput.value = email;
     
     try {
         const syncUrl = syncDebugEnabled ? '/.netlify/functions/vault-sync?debug=1' : '/.netlify/functions/vault-sync';
@@ -1455,6 +1478,12 @@ function renderFetchedCourses() {
             </div>
         `;
     }).join('');
+
+    container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', updateFetchedCoursesButtonState);
+    });
+
+    updateFetchedCoursesButtonState();
 }
 
 function addSelectedFetchedCourses() {

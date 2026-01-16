@@ -131,11 +131,15 @@
                             <p style="margin: 0 0 10px; font-size: 0.9em; color: var(--text-light);">Optional: back up your encrypted connection to access on other devices.</p>
                             <input type="email" id="syncEmailInput" placeholder="Enter your email (e.g. you@school.edu)" style="margin-bottom:8px; width:100%; padding:10px; font-size:1rem;">
                             <label style="display:flex; align-items:flex-start; gap:8px; font-size:0.9em; margin:6px 0 10px; color:var(--text-light);">
-                                <input type="checkbox" id="newsletterOptIn" style="margin-top:3px;">
+                                <input type="checkbox" id="newsletterOptIn" style="margin-top:3px;" checked>
                                 <span>Join our newsletter and sync across all your devices! We’ll only use your email for product updates and tips.</span>
                             </label>
                             <button class="btn btn-secondary" style="width:100%; margin-bottom:5px;" id="syncBackupBtn" disabled>Sync / Backup Now</button>
                             <small id="syncStatus" style="color:var(--text-light);"></small>
+                            <div style="margin-top:10px; padding-top:10px; border-top:1px solid #e2e8f0;">
+                                <p style="margin: 0 0 6px; font-size:0.9em; color:var(--text-light);">Made changes on another device?</p>
+                                <button class="btn btn-secondary" style="width:100%;" id="syncDownloadNowBtn">Download & Sync Updates</button>
+                            </div>
                             <button class="btn btn-link-small" id="deleteCloudBackupBtn" style="width:100%; margin-top:8px; color:#d9534f;">Delete Cloud Backup</button>
                             <div id="syncMessage" class="result-message" style="margin-top:10px;"></div>
                         </div>
