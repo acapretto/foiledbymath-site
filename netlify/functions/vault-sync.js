@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { getStore } = require('@netlify/blobs');
 
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
@@ -34,7 +35,27 @@ function isRateLimited(ip) {
  */
 
 const DB_FILE = path.join(__dirname, '.local_sync_db.json');
-const IS_LOCAL = !process.env.NETLIFY_BLOBS_CONTEXT; // Simple check
+const IS_LOCAL = process.env.NETLIFY_DEV === 'true' || process.env.NETLIFY_DEV === '1';
+
+function hashUserId(userId) {
+    return crypto.createHash('sha256').update(String(userId || '')).digest('hex').slice(0, 12);
+}
+
+function getStorageMode() {
+    if (IS_LOCAL) return 'local-file';
+    const siteID = process.env.NETLIFY_BLOBS_SITE_ID;
+    const token = process.env.NETLIFY_BLOBS_TOKEN;
+    return siteID && token ? 'blobs-pat' : 'blobs-native';
+}
+
+function getBlobStore(name) {
+    const siteID = process.env.NETLIFY_BLOBS_SITE_ID;
+    const token = process.env.NETLIFY_BLOBS_TOKEN;
+    if (siteID && token) {
+        return getStore(name, { siteID, token });
+    }
+    return getStore(name);
+}
 
 async function getStoreData(userId) {
     if (IS_LOCAL) {
@@ -52,7 +73,7 @@ async function getStoreData(userId) {
         // --- Cloud Blob Strategy ---
         // Requires 'Netlify Blobs' addon to be enabled on the site
         try {
-            const store = getStore('vaults');
+            const store = getBlobStore('vaults');
             const data = await store.get(userId, { type: 'json' });
             return data;
         } catch (e) {
@@ -81,7 +102,7 @@ async function saveStoreData(userId, data) {
     } else {
         // --- Cloud Blob Strategy ---
         try {
-            const store = getStore('vaults');
+            const store = getBlobStore('vaults');
             await store.set(userId, JSON.stringify(data));
         } catch (e) {
             console.error('Cloud Blob Write Error:', e);
@@ -108,7 +129,7 @@ async function deleteStoreData(userId) {
         }
     } else {
         try {
-            const store = getStore('vaults');
+            const store = getBlobStore('vaults');
             await store.delete(userId);
         } catch (e) {
             console.error('Cloud Blob Delete Error:', e);
@@ -134,6 +155,15 @@ function getCorsOrigin(event) {
 }
 
 exports.handler = async function(event, context) {
+    const requestId = crypto.randomBytes(8).toString('hex');
+    const debugEnabled = event.queryStringParameters?.debug === '1';
+    const debugInfo = debugEnabled ? {
+        requestId,
+        storage: getStorageMode(),
+        isLocal: IS_LOCAL,
+        time: new Date().toISOString()
+    } : undefined;
+
     const headers = {
         'Access-Control-Allow-Origin': getCorsOrigin(event),
         'Access-Control-Allow-Headers': 'Content-Type',
@@ -159,12 +189,14 @@ exports.handler = async function(event, context) {
     }
 
     const { deviceId, userId, action, vaultBlob } = JSON.parse(event.body || '{}');
+    const userHash = hashUserId(userId);
+    console.info('vault-sync request', { requestId, action, userHash, storage: getStorageMode() });
 
   if (!userId) {
     return { 
         statusCode: 400, 
         headers, 
-        body: JSON.stringify({ error: 'Missing userId' }) 
+                body: JSON.stringify({ error: 'Missing userId', requestId, ...(debugInfo ? { debug: debugInfo } : {}) }) 
     };
   }
 
@@ -173,15 +205,15 @@ exports.handler = async function(event, context) {
     try {
         const data = await getStoreData(userId);
         if (!data) {
-            return { statusCode: 404, headers, body: JSON.stringify({ error: 'No data found' }) };
+            return { statusCode: 404, headers, body: JSON.stringify({ error: 'No data found', requestId, ...(debugInfo ? { debug: debugInfo } : {}) }) };
         }
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify(data)
+            body: JSON.stringify({ ...data, requestId, ...(debugInfo ? { debug: debugInfo } : {}) })
         };
     } catch (e) {
-        return { statusCode: 500, headers, body: JSON.stringify({ error: 'Storage error' }) };
+        return { statusCode: 500, headers, body: JSON.stringify({ error: 'Storage error', requestId, ...(debugInfo ? { debug: debugInfo } : {}) }) };
     }
   }
 
@@ -192,22 +224,22 @@ exports.handler = async function(event, context) {
                 return {
                         statusCode: 200,
                         headers,
-                        body: JSON.stringify({ success: true })
+                body: JSON.stringify({ success: true, requestId, ...(debugInfo ? { debug: debugInfo } : {}) })
                 };
         } catch (e) {
-                return { statusCode: 500, headers, body: JSON.stringify({ error: 'Delete failed' }) };
+            return { statusCode: 500, headers, body: JSON.stringify({ error: 'Delete failed', requestId, ...(debugInfo ? { debug: debugInfo } : {}) }) };
         }
     }
 
   // SYNC: PUSH
   if (event.httpMethod === 'POST' || action === 'push') {
     if (!vaultBlob) {
-        return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing vaultBlob' }) };
+                return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing vaultBlob', requestId, ...(debugInfo ? { debug: debugInfo } : {}) }) };
     }
     
     // Security: Limit payload size approx 50KB to prevent abuse
     if (vaultBlob.length > 50000) {
-        return { statusCode: 413, headers, body: JSON.stringify({ error: 'Payload too large' }) };
+        return { statusCode: 413, headers, body: JSON.stringify({ error: 'Payload too large', requestId, ...(debugInfo ? { debug: debugInfo } : {}) }) };
     }
 
     try {
@@ -222,12 +254,12 @@ exports.handler = async function(event, context) {
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify({ success: true, timestamp: Date.now() })
+            body: JSON.stringify({ success: true, timestamp: Date.now(), requestId, ...(debugInfo ? { debug: debugInfo } : {}) })
         };
     } catch (e) {
-        return { statusCode: 500, headers, body: JSON.stringify({ error: 'Storage error: ' + e.message }) };
+        return { statusCode: 500, headers, body: JSON.stringify({ error: 'Storage error: ' + e.message, requestId, ...(debugInfo ? { debug: debugInfo } : {}) }) };
     }
   }
 
-  return { statusCode: 405, headers, body: 'Method Not Allowed' };
+  return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method Not Allowed', requestId, ...(debugInfo ? { debug: debugInfo } : {}) }) };
 };

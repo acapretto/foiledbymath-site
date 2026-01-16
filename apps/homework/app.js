@@ -79,6 +79,7 @@ let assignmentGroups = [];
 let assignmentGroupsByCourse = {};
 let autoTitleEnabled = true;
 let lastAutoTitle = '';
+const syncDebugEnabled = new URLSearchParams(window.location.search).get('debug') === '1';
 
 console.log('App.js loaded successfully');
 
@@ -827,7 +828,8 @@ async function pushSyncData() {
     };
 
     try {
-        const response = await fetch('/.netlify/functions/vault-sync', {
+        const syncUrl = syncDebugEnabled ? '/.netlify/functions/vault-sync?debug=1' : '/.netlify/functions/vault-sync';
+        const response = await fetch(syncUrl, {
             method: 'POST',
             body: JSON.stringify({
                 action: 'push',
@@ -848,7 +850,8 @@ async function pushSyncData() {
                 await signupNewsletter(email);
             }
         } else {
-            throw new Error(data.error);
+            const req = data.requestId ? ` (ref: ${data.requestId})` : '';
+            throw new Error((data.error || 'Sync failed') + req);
         }
     } catch (e) {
         const friendly = e.message && e.message.includes('Cloud storage not configured')
@@ -869,7 +872,8 @@ async function pullSyncData() {
     if (emailInput) emailInput.value = email;
     
     try {
-        const response = await fetch('/.netlify/functions/vault-sync', {
+        const syncUrl = syncDebugEnabled ? '/.netlify/functions/vault-sync?debug=1' : '/.netlify/functions/vault-sync';
+        const response = await fetch(syncUrl, {
             method: 'POST',
             body: JSON.stringify({
                 action: 'pull',
@@ -880,10 +884,12 @@ async function pullSyncData() {
         const data = await response.json();
         if (!response.ok) {
             if (data.error && String(data.error).toLowerCase().includes('no data found')) {
-                showMessage('No backup found for that email. Create a backup on another device first, then download here.', 'error');
+                const req = data.requestId ? ` (ref: ${data.requestId})` : '';
+                showMessage('No backup found for that email. Create a backup on another device first, then download here.' + req, 'error');
                 return;
             }
-            throw new Error(data.error || 'Failed to download');
+            const req = data.requestId ? ` (ref: ${data.requestId})` : '';
+            throw new Error((data.error || 'Failed to download') + req);
         }
         
         // Handle Sync Bundle
