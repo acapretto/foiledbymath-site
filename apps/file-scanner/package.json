@@ -1,0 +1,55 @@
+{
+  "name": "file-scanner-tagger",
+  "version": "1.0.0",
+  "description": "A macOS file scanner and tagger app for smart folder organization",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac",
+    "dev": "electron . --enable-logging"
+  },
+  "keywords": [
+    "file",
+    "scanner",
+    "tagger",
+    "macos",
+    "smart-folders",
+    "ocr"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "electron-store": "^8.1.0",
+    "tesseract.js": "^5.0.0",
+    "pdf-parse": "^1.1.1",
+    "exif-parser": "^0.1.12",
+    "mime-types": "^2.1.35",
+    "chokidar": "^3.5.3"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.foiledbymath.file-scanner",
+    "productName": "File Scanner & Tagger",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "assets/icon.icns"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist"
+    }
+  }
+}
