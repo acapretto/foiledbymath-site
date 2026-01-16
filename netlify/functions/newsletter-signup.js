@@ -37,6 +37,15 @@ function getCorsOrigin(event) {
   return allowList[0] || '';
 }
 
+function getBlobStore(name) {
+  const siteID = process.env.NETLIFY_BLOBS_SITE_ID;
+  const token = process.env.NETLIFY_BLOBS_TOKEN;
+  if (siteID && token) {
+    return getStore({ name, siteID, token });
+  }
+  return getStore(name);
+}
+
 function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
 }
@@ -74,7 +83,7 @@ exports.handler = async function(event) {
       return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid email' }) };
     }
 
-    const store = getStore('newsletter');
+    const store = getBlobStore('newsletter');
     const key = email.trim().toLowerCase();
     const payload = {
       email: key,
