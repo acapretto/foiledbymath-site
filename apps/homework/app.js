@@ -940,11 +940,18 @@ async function pullSyncData() {
         // Switch to Locked state (so user can enter password to decrypt)
         updateVaultUI('locked');
         
+        const downloadedAt = data.updatedAt ? new Date(data.updatedAt) : null;
+        const timeNote = downloadedAt ? ` (backup from ${downloadedAt.toLocaleString()})` : '';
         const successMsg = isFullRestore 
-            ? 'Settings & Secure Connection restored! Enter password to unlock.' 
-            : 'Secure Connection downloaded! Enter your password to unlock.';
+            ? `Settings & Secure Connection restored! Enter password to unlock.${timeNote}` 
+            : `Secure Connection downloaded! Enter your password to unlock.${timeNote}`;
             
         showMessage(successMsg, 'success');
+
+        const syncStatus = document.getElementById('syncStatus');
+        if (syncStatus && downloadedAt) {
+            syncStatus.textContent = `Last downloaded: ${downloadedAt.toLocaleString()}`;
+        }
         
         // Clean up UI
         hideSyncLogin();
