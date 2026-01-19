@@ -88,7 +88,8 @@ exports.handler = async function(event) {
     const validCodes = [
       'FOILED-BY-MATH',
       'FBM-2025-LAUNCH',
-      'TEACHER-VIP'
+      'TEACHER-VIP',
+      'FBM-WELCOME'
     ];
 
     if (!validCodes.includes(userCode)) {
