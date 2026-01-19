@@ -56,10 +56,16 @@ function getMailer() {
   const pass = process.env.SMTP_PASS;
   if (!user || !pass) return null;
 
+  const host = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const port = Number(process.env.SMTP_PORT || 465);
+  const secure = process.env.SMTP_SECURE
+    ? String(process.env.SMTP_SECURE).toLowerCase() === 'true'
+    : port === 465;
+
   return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    host,
+    port,
+    secure,
     auth: { user, pass }
   });
 }
@@ -112,7 +118,14 @@ exports.handler = async function(event) {
       const to = process.env.SMTP_TO || process.env.SMTP_USER;
       const from = process.env.SMTP_FROM || process.env.SMTP_USER;
       const subject = 'New Foiled By Math sync signup';
-      const text = `New email signup: ${key}`;
+      const baseUrl = process.env.URL || process.env.DEPLOY_URL || process.env.ALLOWED_ORIGIN || '';
+      const exportToken = process.env.NEWSLETTER_EXPORT_TOKEN || '';
+      const exportUrl = baseUrl && exportToken
+        ? `${baseUrl}/.netlify/functions/newsletter-export?token=${encodeURIComponent(exportToken)}&format=csv`
+        : '';
+      const text = exportUrl
+        ? `New email signup: ${key}\nExport list (CSV): ${exportUrl}`
+        : `New email signup: ${key}`;
       try {
         await mailer.sendMail({ to, from, subject, text });
       } catch (e) {
