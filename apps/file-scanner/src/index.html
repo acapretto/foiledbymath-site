@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Scanner & Tagger</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <h1>File Scanner & Tagger</h1>
+      <p class="subtitle">Organize your files with intelligent tagging</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Left Sidebar - Controls -->
+      <aside class="sidebar">
+        <section class="control-section">
+          <h2>Scan Files</h2>
+          <button id="select-files-btn" class="btn btn-primary">
+            <span class="icon">📄</span>
+            Select Files
+          </button>
+          <button id="select-directory-btn" class="btn btn-primary">
+            <span class="icon">📁</span>
+            Select Directory
+          </button>
+        </section>
+
+        <section class="control-section">
+          <h2>Scan Options</h2>
+          <label class="checkbox-label">
+            <input type="checkbox" id="analyze-content" checked>
+            Analyze Content
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="use-ocr">
+            Use OCR (slower)
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="extract-metadata" checked>
+            Extract Metadata
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="recursive-scan" checked>
+            Recursive Scan
+          </label>
+        </section>
+
+        <section class="control-section">
+          <h2>All Tags</h2>
+          <div id="all-tags" class="tag-cloud">
+            <p class="empty-state">No tags yet</p>
+          </div>
+        </section>
+
+        <section class="control-section">
+          <h2>Smart Folders</h2>
+          <button id="create-smart-folder-btn" class="btn btn-secondary">
+            <span class="icon">✨</span>
+            Create Smart Folder
+          </button>
+          <div id="smart-folders-list" class="smart-folders">
+            <p class="empty-state">No smart folders yet</p>
+          </div>
+        </section>
+      </aside>
+
+      <!-- Center - File List -->
+      <section class="file-list-container">
+        <div class="file-list-header">
+          <h2>Scanned Files</h2>
+          <div class="file-count">
+            <span id="file-count">0</span> files
+          </div>
+        </div>
+        
+        <div id="file-list" class="file-list">
+          <div class="empty-state-large">
+            <span class="icon">📂</span>
+            <p>Select files or a directory to start scanning</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Sidebar - File Details -->
+      <aside class="details-panel">
+        <div id="file-details" class="file-details">
+          <div class="empty-state-large">
+            <span class="icon">🏷️</span>
+            <p>Select a file to view details and manage tags</p>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Status Bar -->
+    <footer class="status-bar">
+      <div id="status-message">Ready</div>
+      <div id="progress-indicator" class="progress-indicator hidden">
+        <div class="spinner"></div>
+        <span id="progress-text">Processing...</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Smart Folder Modal -->
+  <div id="smart-folder-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Create Smart Folder</h2>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="folder-name">Folder Name</label>
+          <input type="text" id="folder-name" placeholder="My Smart Folder">
+        </div>
+        
+        <div class="form-group">
+          <label for="folder-tags">Tags (comma-separated)</label>
+          <input type="text" id="folder-tags" placeholder="document, important, 2024">
+        </div>
+
+        <div class="form-group">
+          <label for="file-type">File Type (optional)</label>
+          <input type="text" id="file-type" placeholder="e.g., public.pdf">
+        </div>
+
+        <div class="form-group">
+          <label for="modified-after">Modified After (optional)</label>
+          <input type="date" id="modified-after">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="cancel-smart-folder" class="btn btn-secondary">Cancel</button>
+        <button id="create-smart-folder" class="btn btn-primary">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
