@@ -1,7 +1,19 @@
 [build]
   publish = "."
   functions = "netlify/functions"
-  
+
+[[redirects]]
+  from = "/apps/homework"
+  to = "https://quickpost.foiledbymath.com"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/apps/homework/*"
+  to = "https://quickpost.foiledbymath.com/:splat"
+  status = 301
+  force = true
+
 [[headers]]
   for = "/*"
   [headers.values]
