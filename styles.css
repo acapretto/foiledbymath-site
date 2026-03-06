@@ -148,8 +148,9 @@ nav a:hover {
 
 .hero-buttons {
     display: flex;
-    gap: 1.5rem;
+    gap: 2rem;
     justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
 }
 
